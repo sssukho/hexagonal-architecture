@@ -1,0 +1,104 @@
+subprojects {
+	group = 'com.sssukho'
+	version = '0.0.1'
+
+	ext {
+		springBootPluginVersion = '3.3.12'
+		springDependencyManagementPluginVersion = '1.1.7'
+		lombokPluginVersion = '8.13.1'
+		junitJupiterVersion = '5.10.5'
+		junitPlatformVersion = '1.10.5'
+	}
+
+	repositories {
+		mavenCentral()
+	}
+
+	tasks.withType(Test).configureEach {
+		useJUnitPlatform {
+			if (!project.hasProperty('integration-test')) {
+				excludeTags 'integration-test'
+			}
+		}
+
+		testLogging {
+			events 'PASSED', 'FAILED', 'SKIPPED'
+		}
+	}
+
+	afterEvaluate { project ->
+		tasks.matching { it.name == 'jar' || it.name == 'bootJar' }.all { jarTask ->
+			jarTask.doLast {
+				def outputDir = new File(rootProject.projectDir, "output")
+				outputDir.mkdirs()
+				copyJarFiles(jarTask, outputDir, project)
+				copyConfigsFiles(project, outputDir)
+				copyEnvironmentFiles(project, outputDir)
+			}
+		}
+	}
+}
+
+def copyJarFiles(jarTask, outputDir, project) {
+	def jarFile = jarTask.archiveFile.get().asFile
+	if (jarFile.name.startsWith("hexagonal-api")) {
+		copy {
+			from jarFile
+			into outputDir
+		}
+		println "Copied ${jarFile.name} to ${outputDir}"
+	} else {
+		println "Skipped copying ${jarFile.name} (not matching 'hexagonal-api*') for ${project.name}"
+	}
+}
+
+def copyEnvironmentFiles(project, outputDir) {
+	def rootDir = rootProject.projectDir
+	def dockerComposeFile = new File(rootDir, 'docker-compose.yml')
+	def initSqlFile = new File(rootDir, 'init.sql')
+
+	// docker-compose.yml 복사
+	if (dockerComposeFile.exists()) {
+		copy {
+			from dockerComposeFile
+			into outputDir
+		}
+		println "Copied docker-compose.yml to ${outputDir}"
+	} else {
+		println "docker-compose.yml not found in root directory"
+	}
+
+	// init.sql 복사
+	if (initSqlFile.exists()) {
+		copy {
+			from initSqlFile
+			into outputDir
+		}
+		println "Copied init.sql to ${outputDir}"
+	} else {
+		println "init.sql not found in root directory"
+	}
+}
+
+def copyConfigsFiles(project, outputDir) {
+	def resourcesDir = new File(project.buildDir, "resources/main")
+
+	if (resourcesDir.exists()) {
+		resourcesDir.eachFileRecurse { file ->
+			if (file.isFile() && file.name.endsWith('-prod.yml')) {
+				def originalName = file.name
+				def destFileName = originalName.replaceFirst('-prod\\.yml$', '.yml')
+
+				copy {
+					from file
+					into outputDir
+					rename { _ -> destFileName }
+				}
+
+				println "Copied prod config file: ${originalName} -> ${destFileName} for ${project.name}"
+			}
+		}
+	} else {
+		println "No resources directory found for ${project.name}"
+	}
+}

@@ -1,0 +1,18 @@
+plugins {
+	id 'java-library'
+	id 'io.freefair.lombok' version "${lombokPluginVersion}"
+}
+
+dependencies {
+	implementation project(':hexagonal-common')
+	implementation project(':hexagonal-domain')
+
+	implementation "org.springframework.boot:spring-boot-starter:${springBootPluginVersion}"
+	implementation "org.springframework.boot:spring-boot-starter-data-jpa:${springBootPluginVersion}"
+	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.10.0'
+
+	runtimeOnly 'com.mysql:mysql-connector-j:9.1.0'
+
+	testImplementation "org.springframework.boot:spring-boot-starter-test:${springBootPluginVersion}"
+	testImplementation project(':hexagonal-testcontainer')
+}
