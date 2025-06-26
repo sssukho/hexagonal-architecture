@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/hexagonal?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: sssukho
+    password: sssukho1234
+    hikari:
+      data-source-properties:
+        rewriteBatchedStatements: true
+    p6spy:
+      enable-logging: false
+      logging: slf4j
+
+  jpa:
+    show-sql: false
+    hibernate:
+      dialect: org.hibernate.dialect.MySQL8Dialect
+      ddl-auto: none
+      format_sql: false
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 100
+
+logging:
+  level:
+    p6spy: OFF
+    com.p6spy: OFF
+    org.springframework.jdbc: INFO

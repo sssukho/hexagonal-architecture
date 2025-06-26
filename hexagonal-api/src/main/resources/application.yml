@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: hexagonal-api
+  config:
+    import: classpath:infra.yml
+
+server:
+  port: 8080
+  tomcat:
+    uri-encoding: UTF-8
+  shutdown: graceful
+
+secret:
+  jwt:
+    secret: hexagonalarchiecturesecretkey2025!@
+    accessTokenExpirationMs: 1800000 # 30분
+    refreshTokenExpirationMs: 86400000 # 24시간
+
+logging:
+  level:
+    root: INFO
+    com.sssukho: DEBUG
+  #    com.p6spy.engine: trace
+  #    org.hibernate.SQL: debug
+  pattern:
+    console: "%-5level %d{yyyy-MM-dd HH:mm:ss} [%thread] %-32.32logger{0} %C %M %msg%n"
+#    file: "%-5level %d{yyyy-MM-dd HH:mm:ss} [%thread] %-32.32logger{0} %C %M %msg%n"
+#  file:
+#    name: application.log

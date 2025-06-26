@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: hexagonal-api
+  config:
+    import: classpath:infra.yml
+
+server:
+  port: 8080
+  tomcat:
+    uri-encoding: UTF-8
+  shutdown: graceful
+
+secret:
+  jwt:
+    secret: hexagonalarchiecturesecretkey2025!@
+    accessTokenExpirationMs: 1800000 # 30분
+    refreshTokenExpirationMs: 86400000 # 24시간
