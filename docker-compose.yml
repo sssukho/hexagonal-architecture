@@ -1,0 +1,16 @@
+services:
+  db:
+    image: mysql:9.1
+    container_name: hexagonal_mysql
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: hexagonal
+      MYSQL_USER: sssukho
+      MYSQL_PASSWORD: sssukho1234
+      T: Asia/Seoul
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    platform: linux/arm64/v8
